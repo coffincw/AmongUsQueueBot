@@ -9,7 +9,7 @@ Click [here](https://discord.com/api/oauth2/authorize?client_id=7852641173882798
     - Adds yourself to the queue
 - !d
     - Removes yourself from the queue
-- !l
+- !q
     - Displays the current queue including how long each player has been in the queue
 - !uc [minutes]
     - Update the cooldown to remove players from the queue
