@@ -24,14 +24,18 @@ async def on_ready():
     print('------')
     client.loop.create_task(q.update_set())
 
-
+@client.event
 async def on_message(message):
     author = message.author
 
     # if the user is in the queue update their time to 
     # indicate they're active
-    if q.user_queue.contains(author):
-        q.user_queue.update_user_time(author)
+    print("test")
+    has_author = await q.user_queue.contains(author)
+    if has_author:
+        await q.user_queue.update_user_time(author)
+        print(author.display_name)
+    await client.process_commands(message)
 
 
 

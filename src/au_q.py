@@ -27,12 +27,14 @@ class AmongUsQueue:
         users_to_remove = set()
         for user, arr in self.user_time_dict.items():
             if time.time() > arr[0] + (60*self.cooldown):
-                users_to_remove.add(user)
-        for user in users_to_remove:
-            self.user_time_dict.pop(user)
-            await arr[1].send(user.mention + ' has been removed from the queue due to inactivity, type !c to re-add')
+                users_to_remove.add((user, arr[1]))
+        for pair in users_to_remove:
+            self.user_time_dict.pop(pair[0])
+            await pair[1].send(pair[0].mention + ' has been removed from the queue due to inactivity, type !c to re-add')
 
     async def contains(self, player):
+        print(player)
+        print(self.user_time_dict)
         return player in self.user_time_dict
 
     async def get_dict(self):
