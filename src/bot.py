@@ -27,12 +27,13 @@ async def on_ready():
 @client.event
 async def on_message(message):
     author = message.author
+    server_id = message.guild.id
 
     # if the user is in the queue update their time to 
     # indicate they're active
-    has_author = await q.user_queue.contains(author)
+    has_author = await q.user_queue.contains(author, server_id)
     if has_author:
-        await q.user_queue.update_user_time(author)
+        await q.user_queue.update_user_time(server_id, author)
     await client.process_commands(message)
 
 
