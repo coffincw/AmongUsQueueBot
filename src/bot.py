@@ -30,11 +30,9 @@ async def on_message(message):
 
     # if the user is in the queue update their time to 
     # indicate they're active
-    print("test")
     has_author = await q.user_queue.contains(author)
     if has_author:
         await q.user_queue.update_user_time(author)
-        print(author.display_name)
     await client.process_commands(message)
 
 

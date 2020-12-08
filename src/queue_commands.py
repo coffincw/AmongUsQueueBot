@@ -21,16 +21,24 @@ async def list_queue(ctx):
     cooldown = await user_queue.get_cooldown()
     description = "!c to add yourself, !d to leave\nPlayers who don\'t send a message in the server\nfor " + \
                   (str(int(cooldown)) if cooldown.is_integer() else str(cooldown)) + " minutes will be dropped"
-    embed = discord.Embed(title="Among Us Queue", description=description, color=discord.Color.teal())
+    embed = discord.Embed(
+        title="Among Us Queue", 
+        description=description, 
+        color=discord.Color.blurple())
     if len(user_dict) == 0:
-        embed.add_field(name="No players in the queue", value="-----")
+        embed.add_field(
+            name="No players in the queue", 
+            value="-----")
     else:
         for user, arr in user_dict.items():
             num_min = (time.time() - arr[0]) / 60
             num_seconds = (time.time()-arr[0]) % 60
-            embed.add_field(name=user.display_name, value="Added " + str(int(num_min)) + "m " + str(int(num_seconds)) + "s ago")
+            embed.add_field(
+                name=user.display_name, 
+                value="Added " + str(int(num_min)) + "m " + str(int(num_seconds)) + "s ago")
 
-    embed.set_footer(text="Updated " + time.strftime("%m/%d/%Y, %H:%M:%S", time.gmtime()) + " UTC")
+    embed.set_footer(
+        text="Updated " + time.strftime("%m/%d/%Y, %H:%M:%S", time.gmtime()) + " UTC")
 
     await ctx.send(embed=embed)
 
@@ -46,6 +54,14 @@ async def remove_from_queue(ctx):
 
 async def update_cooldown(ctx, cooldown):
     if not cooldown.isnumeric():
-        await ctx.send(embed=discord.Embed(description="Please enter a number, example: !uc 15", color=discord.Color.red()))
+        await ctx.send(embed=discord.Embed(
+            description="Please enter a number, example: !uc 15",
+            color=discord.Color.red()))
         return
-    await user_queue.set_cooldown(float(cooldown))
+    prev_cooldown = await user_queue.get_cooldown()
+    new_cooldown = await user_queue.set_cooldown(float(cooldown))
+    description = "Cooldown changed from " + str(prev_cooldown) + " minutes to " + \
+                  str(new_cooldown) + " minutes."
+    await ctx.send(embed=discord.Embed(
+        description=description, 
+        color=discord.Color.green()))

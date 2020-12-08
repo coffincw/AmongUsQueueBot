@@ -33,8 +33,6 @@ class AmongUsQueue:
             await pair[1].send(pair[0].mention + ' has been removed from the queue due to inactivity, type !c to re-add')
 
     async def contains(self, player):
-        print(player)
-        print(self.user_time_dict)
         return player in self.user_time_dict
 
     async def get_dict(self):
@@ -45,6 +43,7 @@ class AmongUsQueue:
 
     async def set_cooldown(self, cooldown):
         self.cooldown = cooldown
+        return self.cooldown
 
     async def size(self):
         return len(self.user_time_dict)
