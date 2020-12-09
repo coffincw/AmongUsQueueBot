@@ -7,7 +7,7 @@ class AmongUsQueue:
         '''
         user_time_dict = {
             server_id1: {
-                "vc_id": "",
+                "vc_id": -1,
                 "cooldown": float # in minutes
                 "users": {
                     user1object: [timeadded, context],
@@ -42,7 +42,8 @@ class AmongUsQueue:
                 users_to_remove.add((user, arr[1]))
         for pair in users_to_remove:
             self.user_time_dict[server_id]["users"].pop(pair[0])
-            await pair[1].send(pair[0].mention + ' has been removed from the queue due to inactivity, type !c to re-add')
+            if pair[1] is not None:
+                await pair[1].send(pair[0].mention + ' has been removed from the queue due to inactivity, type !c to re-add')
 
     async def contains(self, player, server_id):
         has_server = await self.has_server(server_id)
@@ -63,6 +64,12 @@ class AmongUsQueue:
     async def set_cooldown(self, server_id, cooldown):
         self.user_time_dict[server_id]["cooldown"] = cooldown
         return cooldown
+
+    async def set_voice_channel_id(self, server_id, vc_id):
+        self.user_time_dict[server_id]["vc_id"] = vc_id
+    
+    async def get_voice_channel_id(self, server_id):
+        return self.user_time_dict[server_id]["vc_id"]
 
     async def queue_size(self, server_id):
         has_server = self.has_server(server_id)
