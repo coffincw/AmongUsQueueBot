@@ -36,24 +36,30 @@ async def list_queue(ctx):
     server_id = ctx.message.guild.id
     user_dict = await user_queue.get_player_dict(server_id)
     cooldown = await user_queue.get_cooldown(server_id)
-    description = "!c to add yourself, !d to leave\nPlayers who don\'t send a message in the server\nfor " + \
-                  (str(int(cooldown)) if cooldown.is_integer() else str(cooldown)) + " minutes will be dropped"
+    description = "!c to add yourself, !d to leave\n\n"
+    # Players who don\'t send a message in the server\nfor " + \
+    #              (str(int(cooldown)) if cooldown.is_integer() else str(cooldown)) + " minutes will be dropped"
+    
+    if len(user_dict) == 0:
+        description += "**No players in the queue**"
+        # embed.add_field(
+        #     name="No players in the queue", 
+        #     value="-----")
+    else:
+        spot = 1
+        for user, arr in user_dict.items():
+            description += "**" + str(spot) + ". " + user.display_name + "**\n"
+            spot += 1
+            #num_min = (time.time() - arr[0]) / 60
+            #num_seconds = (time.time()-arr[0]) % 60
+            # embed.add_field(
+            #     name=user.display_name, 
+            #     value="Added " + str(int(num_min)) + "m " + str(int(num_seconds)) + "s ago",
+            #     inline=False)
     embed = discord.Embed(
         title="Among Us Queue [" + str(len(user_dict)) + "/10]", 
         description=description, 
         color=discord.Color.blurple())
-    if len(user_dict) == 0:
-        embed.add_field(
-            name="No players in the queue", 
-            value="-----")
-    else:
-        for user, arr in user_dict.items():
-            num_min = (time.time() - arr[0]) / 60
-            num_seconds = (time.time()-arr[0]) % 60
-            embed.add_field(
-                name=user.display_name, 
-                value="Added " + str(int(num_min)) + "m " + str(int(num_seconds)) + "s ago",
-                inline=False)
 
     embed.set_footer(
         text="Updated " + time.strftime("%m/%d/%Y, %H:%M:%S", time.gmtime()) + " UTC")
