@@ -9,6 +9,7 @@ class AmongUsQueue:
             server_id1: {
                 "vc_id": -1,
                 "cooldown": float # in minutes
+                "tc_id": -1,
                 "users": {
                     user1object: [timeadded, context],
                     user2object: [timeadded, context],
@@ -23,6 +24,7 @@ class AmongUsQueue:
         self.user_time_dict[server_id] = dict()
         self.user_time_dict[server_id]["users"] = dict()
         self.user_time_dict[server_id]["vc_id"] = -1
+        self.user_time_dict[server_id]["tc_id"] = -1
         self.user_time_dict[server_id]["cooldown"] = 15.0
 
     async def add_player(self, ctx, server_id, player):
@@ -70,6 +72,12 @@ class AmongUsQueue:
     
     async def get_voice_channel_id(self, server_id):
         return self.user_time_dict[server_id]["vc_id"]
+
+    async def set_text_channel_id(self, server_id, tc_id):
+        self.user_time_dict[server_id]["tc_id"] = tc_id
+
+    async def get_text_channel_id(self, server_id):
+        return self.user_time_dict[server_id]["tc_id"]
 
     async def queue_size(self, server_id):
         has_server = self.has_server(server_id)

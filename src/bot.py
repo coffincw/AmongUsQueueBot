@@ -8,8 +8,9 @@ import asyncio
 
 BOT_PREFIX = "!"
 BOT_TOKEN = os.environ.get('AMONG_US_Q_BOT_TOKEN')
+intents = discord.Intents().all()
 
-client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
+client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True, intents=intents)
 client.remove_command('help')
 
 @client.event
