@@ -22,13 +22,15 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-    client.loop.create_task(q.update_set())
+    client.loop.create_task(q.update_set(client))
 
 @client.event
 async def on_message(message):
     author = message.author
     server_id = message.guild.id
-
+    has_server = await q.user_queue.has_server(server_id)
+    if not has_server:
+        await q.user_queue.add_server(server_id)
     # if the user is in the queue update their time to 
     # indicate they're active
     has_author = await q.user_queue.contains(author, server_id)
@@ -90,6 +92,13 @@ async def update_cooldown(ctx, arg):
     Sets the cooldown to remove players from the queue to *arg*
     '''
     await q.update_cooldown(ctx, arg)
+
+@client.command(name='swc', aliases=['setwaitchannel', 'setwait'])
+async def set_wait_channel(ctx, arg):
+    '''
+    Sets the waiting room voice channel for resetting connected users cooldown
+    '''
+    await q.set_waiting_room(ctx, arg)
 
 
 client.run(BOT_TOKEN)

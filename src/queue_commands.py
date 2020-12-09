@@ -9,10 +9,20 @@ import time
 COOLDOWN = 15.0 #minutes
 user_queue = au_q.AmongUsQueue(COOLDOWN)
 
-async def update_set():
+async def update_set(client):
     while True:
         ids = await user_queue.get_server_ids()
         for server_id in ids:
+            vc_id = await user_queue.get_voice_channel_id(server_id)
+            if vc_id != -1:
+                guild = client.get_guild(server_id)
+                connected_players = discord.utils.get(guild.channels, id=vc_id, type=discord.ChannelType.voice).members
+                for player in connected_players:
+                    has_player = await user_queue.contains(player, server_id)
+                    if has_player:
+                        await user_queue.update_user_time(server_id, player)
+                    else:
+                        await user_queue.add_player(None, server_id, player)
             size = await user_queue.queue_size(server_id)
             if size != 0:
                 await user_queue.update(server_id)
@@ -50,9 +60,6 @@ async def list_queue(ctx):
 async def add_to_queue(ctx):
     player = ctx.author # get the author of the command
     server_id = ctx.message.guild.id
-    has_id = await user_queue.has_server(server_id)
-    if not has_id:
-        await user_queue.add_server(server_id)
     await user_queue.add_player(ctx, server_id, player)
     await list_queue(ctx)
 
@@ -79,6 +86,21 @@ async def update_cooldown(ctx, cooldown):
     new_cooldown = await user_queue.set_cooldown(server_id, float(cooldown))
     description = "Cooldown changed from " + (str(int(prev_cooldown)) if prev_cooldown.is_integer() else str(prev_cooldown)) + \
                   " minutes to " + (str(int(new_cooldown)) if new_cooldown.is_integer() else str(new_cooldown)) + " minutes."
+    await ctx.send(embed=discord.Embed(
+        description=description, 
+        color=discord.Color.green()))
+
+async def set_waiting_room(ctx, arg):
+    server_id = ctx.message.guild.id
+    voice_channel = discord.utils.get(ctx.message.guild.channels, name=arg, type=discord.ChannelType.voice)
+    if voice_channel is None:
+        await ctx.send(embed=discord.Embed(
+            description="Can't find voice channel with the name " + arg,
+            color=discord.Color.red()))
+        return
+    channel_id = voice_channel.id
+    await user_queue.set_voice_channel_id(server_id, channel_id)
+    description = "Waiting room channel set to: " + voice_channel.name
     await ctx.send(embed=discord.Embed(
         description=description, 
         color=discord.Color.green()))
