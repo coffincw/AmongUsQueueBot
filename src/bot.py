@@ -7,7 +7,7 @@ import asyncio
 
 
 BOT_PREFIX = "!"
-BOT_TOKEN = os.environ.get('YOUTUBE_BOT_TOKEN')
+BOT_TOKEN = os.environ.get('AMONG_US_Q_BOT_TOKEN')
 
 client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
 client.remove_command('help')

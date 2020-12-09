@@ -22,11 +22,11 @@ class AmongUsQueue:
     async def add_server(self, server_id):
         self.user_time_dict[server_id] = dict()
         self.user_time_dict[server_id]["users"] = dict()
-        self.user_time_dict[server_id]["vc_id"] = ""
+        self.user_time_dict[server_id]["vc_id"] = -1
         self.user_time_dict[server_id]["cooldown"] = 15.0
 
     async def add_player(self, ctx, server_id, player):
-        self.user_time_dict[server_id]["users"][ctx.author] = [time.time(), ctx]
+        self.user_time_dict[server_id]["users"][player] = [time.time(), ctx]
     
     async def remove(self, server_id, player):
         self.user_time_dict[server_id]["users"].pop(player)
