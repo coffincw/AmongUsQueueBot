@@ -14,9 +14,13 @@ async def update_set(client):
         ids = await user_queue.get_server_ids()
         for server_id in ids:
             vc_id = await user_queue.get_voice_channel_id(server_id)
+            print(vc_id)
             if vc_id != -1:
                 guild = client.get_guild(server_id)
+                print(guild)
+                print('------------------')
                 connected_players = discord.utils.get(guild.channels, id=vc_id, type=discord.ChannelType.voice).members
+                print(connected_players)
                 for player in connected_players:
                     has_player = await user_queue.contains(player, server_id)
                     if has_player:
