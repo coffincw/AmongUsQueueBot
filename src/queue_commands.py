@@ -23,7 +23,7 @@ async def update_set(client):
                     if has_player:
                         await user_queue.update_user_time(server_id, player)
                     else:
-                        await user_queue.add_player(None, server_id, player)
+                        await user_queue.add_player(server_id, player)
             size = await user_queue.queue_size(server_id)
             prev_size = await user_queue.get_prev_size(server_id)
             await user_queue.set_prev_size(server_id, size)
