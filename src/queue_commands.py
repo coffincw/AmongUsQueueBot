@@ -14,11 +14,8 @@ async def update_set(client):
         ids = await user_queue.get_server_ids()
         for server_id in ids:
             vc_id = await user_queue.get_voice_channel_id(server_id)
-            print(vc_id)
             if vc_id != -1:
                 guild = client.get_guild(server_id)
-                print(guild)
-                print('------------------')
                 connected_players = discord.utils.get(guild.channels, id=vc_id, type=discord.ChannelType.voice).members
                 print(connected_players)
                 for player in connected_players:
@@ -28,8 +25,18 @@ async def update_set(client):
                     else:
                         await user_queue.add_player(None, server_id, player)
             size = await user_queue.queue_size(server_id)
-            if size != 0:
+            prev_size = await user_queue.get_prev_size(server_id)
+            await user_queue.set_prev_size(server_id, size)
+            if size != 0 and size != prev_size:
                 await user_queue.update(server_id)
+                if size == 5:
+                    await ping_users(server_id, 5)
+                if size == 8:
+                    await ping_users(server_id, 8)
+                if size == 9:
+                    await ping_users(server_id, 9)
+                if size == 10:
+                    await ping_users(server_id, 10)
         await asyncio.sleep(10)
 
 async def list_queue(ctx):
@@ -70,7 +77,7 @@ async def list_queue(ctx):
 async def add_to_queue(ctx):
     player = ctx.author # get the author of the command
     server_id = ctx.message.guild.id
-    await user_queue.add_player(ctx, server_id, player)
+    await user_queue.add_player(server_id, player)
     await list_queue(ctx)
 
 async def remove_from_queue(ctx):
@@ -114,3 +121,34 @@ async def set_waiting_room(ctx, arg):
     await ctx.send(embed=discord.Embed(
         description=description, 
         color=discord.Color.green()))
+
+async def set_text_channel(ctx, arg):
+    server_id = ctx.message.guild.id
+    text_channel = discord.utils.get(ctx.message.guild.channels, name=arg, type=discord.ChannelType.text)
+    if text_channel is None:
+        await ctx.send(embed=discord.Embed(
+            description="Can't find text channel with the name " + arg,
+            color=discord.Color.red()))
+        return
+    await user_queue.set_text_channel(server_id, text_channel)
+    description = "Queue text channel set to: " + text_channel.name
+    await ctx.send(embed=discord.Embed(
+        description=description, 
+        color=discord.Color.green()))
+
+async def ping_users(server_id, size):
+    tc = await user_queue.get_text_channel(server_id)
+    await tc.send(str(tc.guild.default_role) + " " + str(10-size) + " more available spots")
+
+async def ping_queue_players(ctx):
+    server_id = ctx.message.guild.id
+    player_dict = await user_queue.get_player_dict(server_id)
+    if len(player_dict) == 0:
+        await ctx.send(embed=discord.Embed(
+            description="No users in the queue",
+            color=discord.Color.red()))
+        return
+    mention_message = ""
+    for players in player_dict.keys():
+        mention_message += players.mention + " "
+    await ctx.send(mention_message)

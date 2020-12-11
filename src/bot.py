@@ -32,14 +32,13 @@ async def on_message(message):
     has_server = await q.user_queue.has_server(server_id)
     if not has_server:
         await q.user_queue.add_server(server_id)
+        await q.user_queue.set_text_channel(server_id, message.channel)
     # if the user is in the queue update their time to 
     # indicate they're active
     has_author = await q.user_queue.contains(author, server_id)
     if has_author:
         await q.user_queue.update_user_time(server_id, author)
     await client.process_commands(message)
-
-
 
 @client.command(name='h', aliases=['help'])
 async def help(ctx):
@@ -55,7 +54,10 @@ async def help(ctx):
         '!c': 'Adds yourself to the queue',
         '!d': 'Removes yourself from the queue',
         '!q': 'Displays the current queue including how long each player has been in the queue',
-        '!sc [minutes]': 'Sets the cooldown to remove players from the queue to *minutes*'
+        '!sc [minutes]': 'Sets the cooldown to remove players from the queue to *minutes*',
+        '!swc [voice channel name]': 'Sets the waiting room voice channel for resetting connected users cooldown',
+        '!stc [text channel name]': 'Sets the text channel for pinging users',
+        '!pq': 'Pings all users currently in the queue'
     }
     for c, desc in COMMANDS.items():
         embed.add_field(
@@ -100,6 +102,20 @@ async def set_wait_channel(ctx, arg):
     Sets the waiting room voice channel for resetting connected users cooldown
     '''
     await q.set_waiting_room(ctx, arg)
+
+@client.command(name='stc', aliases=['settextchannel', 'setqueuechannel'])
+async def set_wait_channel(ctx, arg):
+    '''
+    Sets the text channel for pinging users
+    '''
+    await q.set_text_channel(ctx, arg)
+
+@client.command(name='pq', aliases=['pingqueue'])
+async def ping_queue(ctx):
+    '''
+    Pings all players currently in the queue
+    '''
+    await q.ping_queue_players(ctx)
 
 
 client.run(BOT_TOKEN)
