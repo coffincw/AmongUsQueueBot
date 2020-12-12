@@ -57,7 +57,8 @@ async def help(ctx):
         '!sc [minutes]': 'Sets the cooldown to remove players from the queue to *minutes*',
         '!swc [voice channel name]': 'Sets the waiting room voice channel for resetting connected users cooldown',
         '!stc [text channel name]': 'Sets the text channel for pinging users',
-        '!pq': 'Pings all users currently in the queue'
+        '!pq': 'Pings all users currently in the queue',
+        '!cl': 'Removes all players from the queue'
     }
     for c, desc in COMMANDS.items():
         embed.add_field(
@@ -116,6 +117,13 @@ async def ping_queue(ctx):
     Pings all players currently in the queue
     '''
     await q.ping_queue_players(ctx)
+
+@client.command(name='cl', aliases=['clear'])
+async def clear(ctx):
+    '''
+    Empties the queue, designed to be used once the sessions is over
+    '''
+    await q.empty_queue(ctx)
 
 
 client.run(BOT_TOKEN)

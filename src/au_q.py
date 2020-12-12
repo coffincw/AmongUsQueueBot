@@ -35,6 +35,9 @@ class AmongUsQueue:
     async def remove(self, server_id, player):
         self.user_time_dict[server_id]["users"].pop(player)
 
+    async def clear(self, server_id):
+        self.user_time_dict[server_id]["users"].clear()
+
     async def update_user_time(self, server_id, player):
         self.user_time_dict[server_id]["users"][player] = time.time()
 

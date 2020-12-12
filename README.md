@@ -13,6 +13,8 @@ Click [here](https://discord.com/api/oauth2/authorize?client_id=7852641173882798
     - Displays the current queue including how long each player has been in the queue
 - !pq
     - Pings all users currently in the queue
+- !cl
+    - Removes all players from the queue
 - !sc [minutes]
     - Update the cooldown to remove players from the queue
 - !swc [voice channel name]

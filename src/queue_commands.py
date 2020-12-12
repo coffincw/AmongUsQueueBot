@@ -35,34 +35,19 @@ async def update_set(client):
                     await ping_users(server_id, 8)
                 if size == 9:
                     await ping_users(server_id, 9)
-                if size == 10:
-                    await ping_users(server_id, 10)
         await asyncio.sleep(10)
 
 async def list_queue(ctx):
     server_id = ctx.message.guild.id
     user_dict = await user_queue.get_player_dict(server_id)
-    cooldown = await user_queue.get_cooldown(server_id)
     description = "!c to add yourself, !d to leave\n\n"
-    # Players who don\'t send a message in the server\nfor " + \
-    #              (str(int(cooldown)) if cooldown.is_integer() else str(cooldown)) + " minutes will be dropped"
-    
     if len(user_dict) == 0:
         description += "**No players in the queue**"
-        # embed.add_field(
-        #     name="No players in the queue", 
-        #     value="-----")
     else:
         spot = 1
         for user, arr in user_dict.items():
             description += "**" + str(spot) + ". " + user.display_name + "**\n"
             spot += 1
-            #num_min = (time.time() - arr[0]) / 60
-            #num_seconds = (time.time()-arr[0]) % 60
-            # embed.add_field(
-            #     name=user.display_name, 
-            #     value="Added " + str(int(num_min)) + "m " + str(int(num_seconds)) + "s ago",
-            #     inline=False)
     embed = discord.Embed(
         title="Among Us Queue [" + str(len(user_dict)) + "/10]", 
         description=description, 
@@ -131,9 +116,8 @@ async def set_text_channel(ctx, arg):
             color=discord.Color.red()))
         return
     await user_queue.set_text_channel(server_id, text_channel)
-    description = "Queue text channel set to: " + text_channel.name
     await ctx.send(embed=discord.Embed(
-        description=description, 
+        description="Queue text channel set to: " + text_channel.name, 
         color=discord.Color.green()))
 
 async def ping_users(server_id, size):
@@ -152,3 +136,10 @@ async def ping_queue_players(ctx):
     for players in player_dict.keys():
         mention_message += players.mention + " "
     await ctx.send(mention_message)
+
+async def empty_queue(ctx):
+    server_id = ctx.message.guild.id
+    await user_queue.clear(server_id)
+    await ctx.send(embed=discord.Embed(
+        description="All players removed from queue.", 
+        color=discord.Color.green()))
