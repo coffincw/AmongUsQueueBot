@@ -43,7 +43,9 @@ class AmongUsQueue:
 
     async def update(self, server_id):
         users_to_remove = set()
+        print("Current Time: " + str(time.time()))
         for user, u_time in self.user_time_dict[server_id]["users"].items():
+            print("Kick " + user.display_name + " out of the queue: " + str(u_time + (60*self.user_time_dict[server_id]["cooldown"])))
             if time.time() > u_time + (60*self.user_time_dict[server_id]["cooldown"]):
                 users_to_remove.add(user)
         for user in users_to_remove:
