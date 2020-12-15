@@ -28,8 +28,8 @@ async def update_set(client):
             size = await user_queue.queue_size(server_id)
             prev_size = await user_queue.get_prev_size(server_id)
             await user_queue.set_prev_size(server_id, size)
-            if size != 0 and size != prev_size:
-                await user_queue.update(server_id)
+            await user_queue.update(server_id)
+            if size != prev_size:
                 if size == 5:
                     await ping_users(server_id, 5)
                 if size == 8:
